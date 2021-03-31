@@ -11,8 +11,12 @@ final class RootViewController: UIViewController {
 
     // MARK: - Members
 
-    private(set) lazy var collectionViewButtonItem: UIBarButtonItem = {
-        UIBarButtonItem(title: "Collection View", primaryAction: makeCollectionViewButtonItemPrimaryAction())
+    private(set) lazy var pushButton: UIButton = {
+        UIButton(type: .system, primaryAction: makePushButtonPrimaryAction())
+    }()
+
+    private(set) lazy var presentButton: UIButton = {
+        UIButton(type: .system, primaryAction: makePresentButtonPrimaryAction())
     }()
 
     // MARK: - Lifecycle
@@ -47,16 +51,42 @@ private extension RootViewController {
     func configureHierarchy() {
         navigationItem.title = "Root"
         navigationItem.largeTitleDisplayMode = .always
-        navigationItem.rightBarButtonItem = collectionViewButtonItem
 
         view.backgroundColor = .systemBackground
+
+        let stackView = UIStackView(arrangedSubviews: [
+            pushButton,
+            presentButton
+        ])
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.spacing = 20
+        stackView.alignment = .center
+
+        view.addSubview(stackView)
+
+        NSLayoutConstraint.activate([
+            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor),
+            stackView.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor)
+        ])
     }
 
-    func makeCollectionViewButtonItemPrimaryAction() -> UIAction? {
-        return UIAction { [unowned self] _ in
+    func makePushButtonPrimaryAction() -> UIAction? {
+        return UIAction(title: "Push VC") { [unowned self] _ in
             let viewController = CollectionExampleViewController()
 
             navigationController?.pushViewController(viewController, animated: true)
+        }
+    }
+
+    func makePresentButtonPrimaryAction() -> UIAction? {
+        return UIAction(title: "Present VC") { [unowned self] _ in
+            let viewController = CollectionExampleViewController()
+            let navigationController = UINavigationController(rootViewController: viewController)
+
+            present(navigationController, animated: true)
         }
     }
 }

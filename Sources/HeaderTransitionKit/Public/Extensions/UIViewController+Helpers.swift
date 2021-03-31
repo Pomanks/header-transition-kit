@@ -18,7 +18,7 @@ public extension UIViewController {
     }
 
     var statusBarHeight: CGFloat {
-        return statusBarFrame.height
+        return isPresented ? .zero : statusBarFrame.height
     }
 
     var navigationBarHeight: CGFloat {
@@ -27,5 +27,11 @@ public extension UIViewController {
 
     var navigationControllerHeight: CGFloat {
         return statusBarHeight + navigationBarHeight
+    }
+
+    var isPresented: Bool {
+        return presentingViewController != nil
+            || navigationController?.presentingViewController?.presentedViewController == navigationController
+            || tabBarController?.presentingViewController is UITabBarController
     }
 }

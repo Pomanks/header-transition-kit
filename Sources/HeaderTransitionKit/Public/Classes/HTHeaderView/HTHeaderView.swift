@@ -11,21 +11,8 @@ open class HTHeaderView: UIView {
 
     // MARK: - Members
 
-    var placeholderImage: UIImage? {
-        switch (traitCollection.horizontalSizeClass, traitCollection.verticalSizeClass) {
-        case (.compact, .regular):
-            return UIImage(named: "background-portrait")
-
-        default:
-            return UIImage(named: "background-landscape")
-        }
-    }
-
     open var multiplier: CGFloat {
-        let width = placeholderImage?.size.width ?? 1
-        let height = placeholderImage?.size.height ?? 1
-
-        return 1 / (width / height)
+        return 0.3
     }
 
     public private(set) lazy var navigationUnderlayGradientView: HTGradientView = {
@@ -38,7 +25,7 @@ open class HTHeaderView: UIView {
     }()
 
     public private(set) lazy var imageView: UIImageView = {
-        let imageView = UIImageView(image: placeholderImage)
+        let imageView = UIImageView()
 
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFill // This is required for the stretchy effect

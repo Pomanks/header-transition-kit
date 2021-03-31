@@ -7,9 +7,6 @@
 
 import UIKit
 
-extension HTHeaderView: HTHeaderViewTransitioning {
+// MARK: - HTHeaderViewTransitioning
 
-    open func updateImage() {
-        imageView.image = placeholderImage
-    }
-}
+extension HTHeaderView: HTHeaderViewTransitioning {}

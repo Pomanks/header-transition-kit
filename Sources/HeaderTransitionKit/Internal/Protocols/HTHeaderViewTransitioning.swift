@@ -13,6 +13,4 @@ public protocol HTHeaderViewTransitioning: UIView {
     var navigationUnderlayGradientView: HTGradientView { get }
     var imageView: UIImageView { get }
     var visualEffectView: UIVisualEffectView { get }
-
-    func updateImage()
 }

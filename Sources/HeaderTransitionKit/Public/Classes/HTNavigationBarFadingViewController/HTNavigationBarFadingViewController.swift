@@ -9,18 +9,44 @@ import UIKit
 
 open class HTNavigationBarFadingViewController: UIViewController {
 
+    // MARK: - Overrides
+
+    override open var preferredStatusBarStyle: UIStatusBarStyle {
+        return statusBarStyle
+    }
+
     // MARK: - Members
+
+    open var barStyle: UIBarStyle = .default {
+        didSet {
+            statusBarStyle = barStyle == .black ? .lightContent : .default
+        }
+    }
+
+    open var statusBarStyle: UIStatusBarStyle = .default {
+        didSet {
+            setNeedsStatusBarAppearanceUpdate()
+        }
+    }
+
+    open var preferredTitleTextAttributes: [NSAttributedString.Key: Any] {
+        return [:]
+    }
 
     open var scrollView: UIScrollView {
         fatalError("You need to specify some `UIScrollView` for the transition! If your scroll view requires some configuration up-front, please use `configureHierarchy()`")
     }
 
     open var headerViewTransitioning: HTHeaderViewTransitioning {
-        fatalError("You need to specify some `UIView` for the transition")
+        fatalError("You need to specify some `UIView` for the transition!")
     }
 
     open var headerViewOverlaying: HTHeaderViewOverlaying {
-        fatalError("You need to specify some `UIView` for the transition")
+        fatalError("You need to specify some `UIView` for the transition!")
+    }
+
+    open var navigationBarPreferredTintColor: UIColor {
+        fatalError("You need to specify some `UIColor` for the transition!")
     }
 
     var animator: UIViewPropertyAnimator?

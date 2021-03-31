@@ -21,11 +21,15 @@ final class CollectionExampleViewController: HTNavigationBarFadingViewController
     }
 
     override var headerViewTransitioning: HTHeaderViewTransitioning {
-        return stretchyHeaderView
+        return headerView
     }
 
     override var headerViewOverlaying: HTHeaderViewOverlaying {
         return overlayHeaderView
+    }
+
+    override var navigationBarPreferredTintColor: UIColor {
+        return .systemOrange
     }
 
     // MARK: - Members
@@ -33,8 +37,8 @@ final class CollectionExampleViewController: HTNavigationBarFadingViewController
     var dataSource: UICollectionViewDiffableDataSource<Section, Int>!
     var collectionView: UICollectionView!
 
-    private(set) lazy var stretchyHeaderView: HTHeaderView = {
-        HTHeaderView(navigationUnderlayHeight: navigationControllerHeight)
+    private(set) lazy var headerView: HeaderView = {
+        HeaderView(navigationUnderlayHeight: navigationControllerHeight)
     }()
 
     private(set) lazy var overlayHeaderView: HTHeaderViewOverlay = {
@@ -55,6 +59,12 @@ final class CollectionExampleViewController: HTNavigationBarFadingViewController
         navigationItem.rightBarButtonItems = [UIBarButtonItem(systemItem: .refresh)]
 
         configureDataSource()
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        headerView.imageView.image = headerView.placeholderImage
     }
 
     override func configureHierarchy() {
