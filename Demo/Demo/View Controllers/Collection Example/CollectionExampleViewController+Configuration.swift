@@ -1,6 +1,6 @@
 //
 //  CollectionExampleViewController+Configuration.swift
-//  HeaderTransitionKit_Example
+//  Demo
 //
 //  Created by Antoine Barré on 3/31/21.
 //
