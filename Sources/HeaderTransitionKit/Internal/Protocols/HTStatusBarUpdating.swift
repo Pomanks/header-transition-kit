@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol HTStatusBarUpdating: AnyObject {
+protocol HTStatusBarUpdating: UIViewController {
 
     var statusBarStyle: UIStatusBarStyle { get }
     var barStyle: UIBarStyle { get set }

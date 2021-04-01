@@ -5,6 +5,7 @@
 //  Created by Antoine Barré on 3/31/21.
 //
 
+import HeaderTransitionKit
 import UIKit
 
 final class RootViewController: UIViewController {
@@ -75,7 +76,8 @@ private extension RootViewController {
 
     func makePushButtonPrimaryAction() -> UIAction? {
         return UIAction(title: "Push VC") { [unowned self] _ in
-            let viewController = CollectionExampleViewController()
+            let rootViewController = CollectionExampleViewController()
+            let viewController = HTNavigationBarFadedTransitionController(rootViewController: rootViewController)
 
             navigationController?.pushViewController(viewController, animated: true)
         }

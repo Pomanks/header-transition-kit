@@ -8,7 +8,7 @@
 import HeaderTransitionKit
 import UIKit
 
-final class CollectionExampleViewController: HTNavigationBarFadingViewController {
+final class CollectionExampleViewController: UIViewController, HTNavigationBarFading {
 
     enum Section {
         case main
@@ -16,32 +16,28 @@ final class CollectionExampleViewController: HTNavigationBarFadingViewController
 
     // MARK: - Overrides
 
-    override var scrollView: UIScrollView {
-        return collectionView
-    }
-
-    override var headerViewTransitioning: HTHeaderViewTransitioning {
-        return headerView
-    }
-
-    override var headerViewOverlaying: HTHeaderViewOverlaying {
-        return overlayHeaderView
-    }
-
-    override var navigationBarPreferredTintColor: UIColor {
+    var preferredNavigationBarTintColor: UIColor {
         return .systemOrange
+    }
+
+    var preferredNavigationBarTitleTextAttributes: [NSAttributedString.Key: Any] {
+        return [:]
+    }
+
+    var scrollView: UIScrollView {
+        return collectionView
     }
 
     // MARK: - Members
 
-    var dataSource: UICollectionViewDiffableDataSource<Section, Int>!
     var collectionView: UICollectionView!
+    var dataSource: UICollectionViewDiffableDataSource<Section, Int>!
 
-    private(set) lazy var headerView: HeaderView = {
+    private(set) lazy var headerView: HTHeaderViewTransitioning = {
         HeaderView(navigationUnderlayHeight: navigationControllerHeight)
     }()
 
-    private(set) lazy var overlayHeaderView: HTHeaderViewOverlay = {
+    private(set) lazy var overlay: HTHeaderViewOverlaying = {
         let view = HTHeaderViewOverlay()
 
         view.backgroundColor = .clear
@@ -58,23 +54,24 @@ final class CollectionExampleViewController: HTNavigationBarFadingViewController
         navigationItem.largeTitleDisplayMode = .never
         navigationItem.rightBarButtonItems = [UIBarButtonItem(systemItem: .refresh)]
 
+        configureHierarchy()
         configureDataSource()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        headerView.imageView.image = headerView.placeholderImage
+        headerView.imageView.image = (headerView as? HeaderView)?.placeholderImage
     }
 
-    override func configureHierarchy() {
-        super.configureHierarchy()
-
+    func configureHierarchy() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: makeCompositionalLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.backgroundColor = .systemBackground
         collectionView.contentInset.bottom = 34
         collectionView.delegate = self
+
+        headerView.imageView.image = (headerView as? HeaderView)?.placeholderImage
 
         view.addSubview(collectionView)
     }

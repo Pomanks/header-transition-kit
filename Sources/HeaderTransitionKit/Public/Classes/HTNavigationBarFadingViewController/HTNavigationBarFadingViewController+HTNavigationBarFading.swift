@@ -1,5 +1,5 @@
 //
-//  HTNavigationBarFadingViewController+HTNavigationBarFading.swift
+//  HTNavigationBarFadedTransitionController+HTNavigationBarFading.swift
 //
 //
 //  Created by Antoine Barré on 3/31/21.
@@ -7,36 +7,26 @@
 
 import UIKit
 
-extension HTNavigationBarFadingViewController: HTNavigationBarFading {
+extension HTNavigationBarFadedTransitionController: HTNavigationBarFading, HTStatusBarUpdating {
 
-    func configureScrollViewHierarchy() {
-        headerViewTransitioning.layer.zPosition = -1
-        headerViewTransitioning.translatesAutoresizingMaskIntoConstraints = false
+    open var preferredNavigationBarTintColor: UIColor {
+        rootViewController.preferredNavigationBarTintColor
+    }
 
-        headerViewOverlaying.translatesAutoresizingMaskIntoConstraints = false
+    open var preferredNavigationBarTitleTextAttributes: [NSAttributedString.Key: Any] {
+        return rootViewController.preferredNavigationBarTitleTextAttributes
+    }
 
-        scrollView.addSubview(headerViewTransitioning)
-        scrollView.addSubview(headerViewOverlaying)
+    open var scrollView: UIScrollView {
+        rootViewController.scrollView
+    }
 
-        animator = UIViewPropertyAnimator()
-        animator?.startAnimation()
-        animator?.pauseAnimation()
+    open var headerView: HTHeaderViewTransitioning {
+        rootViewController.headerView
+    }
 
-        // Constants are set later…
-        headerTopConstraint = headerViewTransitioning.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor)
-        overlayBottomConstraint = headerViewOverlaying.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor)
-
-        NSLayoutConstraint.activate([
-            headerTopConstraint,
-
-            headerViewTransitioning.leadingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.leadingAnchor),
-            headerViewTransitioning.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor),
-
-            headerViewOverlaying.leadingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.leadingAnchor),
-            headerViewOverlaying.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor),
-
-            overlayBottomConstraint
-        ])
+    open var overlay: HTHeaderViewOverlaying {
+        rootViewController.overlay
     }
 
     /**
@@ -45,21 +35,15 @@ extension HTNavigationBarFadingViewController: HTNavigationBarFading {
 
      This method should be called inside `viewWillLayoutSubviews()`.
      */
-    func scrollViewWillLayoutSubviews() {
-        guard headerHeightConstraint == nil, overlayHeightConstraint == nil else {
+    func layoutSubviews() {
+        guard headerHeightConstraint.constant == .zero, overlayHeightConstraint.constant == .zero else {
             return
         }
-        let effectiveHeight = headerHeight
+        let constant = headerHeight
 
-        headerHeightConstraint = headerViewTransitioning.heightAnchor.constraint(equalToConstant: effectiveHeight)
-        headerHeightConstraint.priority = .init(rawValue: 999)
+        headerHeightConstraint.constant = constant
+        overlayHeightConstraint.constant = constant
 
-        overlayHeightConstraint = headerViewOverlaying.heightAnchor.constraint(equalToConstant: effectiveHeight)
-
-        NSLayoutConstraint.activate([
-            headerHeightConstraint,
-            overlayHeightConstraint
-        ])
         configureScrollView()
         configureConstraints()
     }
@@ -73,10 +57,10 @@ extension HTNavigationBarFadingViewController: HTNavigationBarFading {
          - size:         The new size for the container’s view.
          - coordinator:  The transition coordinator object managing the size change. You can use this object to animate your changes or get information about the transition that is in progress.
      */
-    func scrollViewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    func transition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         coordinator.animate(alongsideTransition: { [weak self] _ in
             self?.configureScrollView(for: size)
-            self?.configureConstraints(with: size)
+            self?.configureConstraints(for: size)
         })
     }
 
@@ -100,7 +84,37 @@ extension HTNavigationBarFadingViewController: HTNavigationBarFading {
 
 // MARK: - Helpers
 
-private extension HTNavigationBarFadingViewController {
+private extension HTNavigationBarFadedTransitionController {
+
+    var headerHeight: CGFloat {
+        return view.bounds.width * headerView.multiplier
+    }
+
+    var contentOffset: CGPoint {
+        return scrollView.contentOffset
+    }
+
+    var adjustedContentOffset: CGPoint {
+        var contentOffset = contentOffset
+
+        contentOffset.y += scrollView.safeAreaInsets.top
+
+        return contentOffset
+    }
+
+    func alpha(for threshold: CGFloat, delta value: CGFloat? = nil) -> CGFloat {
+        let delta = value ?? 26 + navigationControllerHeight // Matches half the Large Title extra space
+        let effectiveNavigationOffsetY = threshold + delta + contentOffset.y // The offset matching our navigation's height
+
+        return .fractionComplete(from: effectiveNavigationOffsetY / threshold)
+    }
+
+    func height(from size: CGSize?) -> CGFloat? {
+        guard let size = size else {
+            return nil
+        }
+        return size.width * headerView.multiplier
+    }
 
     func configureNavigationController() {
         guard let navigationController = navigationController else {
@@ -108,15 +122,15 @@ private extension HTNavigationBarFadingViewController {
         }
         let navigationBarAppearance = UINavigationBarAppearance()
 
-        if !preferredTitleTextAttributes.isEmpty {
-            navigationBarAppearance.titleTextAttributes = preferredTitleTextAttributes
+        if !preferredNavigationBarTitleTextAttributes.isEmpty {
+            navigationBarAppearance.titleTextAttributes = preferredNavigationBarTitleTextAttributes
         }
         if -contentOffset.y < navigationControllerHeight {
             navigationBarAppearance.configureWithDefaultBackground()
             navigationBarAppearance.shadowColor = nil
             navigationBarAppearance.shadowImage = nil
 
-            navigationController.navigationBar.tintColor = navigationBarPreferredTintColor
+            navigationController.navigationBar.tintColor = preferredNavigationBarTintColor
 
         } else {
             navigationBarAppearance.configureWithTransparentBackground()
@@ -136,7 +150,7 @@ private extension HTNavigationBarFadingViewController {
         scrollView.setContentOffset(contentOffset, animated: true)
     }
 
-    func configureConstraints(with size: CGSize? = nil) {
+    func configureConstraints(for size: CGSize? = nil) {
         let currentHeight = headerHeight
         let constant = height(from: size)
         let headerConstant = (constant ?? -adjustedContentOffset.y) + scrollView.safeAreaInsets.top
@@ -160,7 +174,7 @@ private extension HTNavigationBarFadingViewController {
     // MARK: Transition (Part 1)
 
     func performFirstTransition(after threshold: CGFloat) {
-        headerViewTransitioning.navigationUnderlayGradientView.alpha = 1 - alpha(for: threshold)
+        headerView.navigationUnderlayGradientView.alpha = 1 - alpha(for: threshold)
     }
 
     // MARK: Transition (Part 2)
@@ -169,10 +183,10 @@ private extension HTNavigationBarFadingViewController {
         let alpha: CGFloat = alpha(for: threshold)
         let reversedAlpha = 1 - alpha
 
-        headerViewTransitioning.imageView.alpha = reversedAlpha
-        headerViewTransitioning.visualEffectView.alpha = alpha
+        headerView.imageView.alpha = reversedAlpha
+        headerView.visualEffectView.alpha = alpha
 
-        headerViewOverlaying.alpha = reversedAlpha
+        overlay.alpha = reversedAlpha
 
         updateStatusBarStyle(with: alpha)
         updateNavigationBarTintColorAlpha(with: alpha)
@@ -191,7 +205,7 @@ private extension HTNavigationBarFadingViewController {
     func updateNavigationBarTintColorAlpha(with alpha: CGFloat) {
         let tintColor: UIColor = alpha == .zero
             ? .white
-            : navigationBarPreferredTintColor.withSaturationUpdated(to: alpha)
+            : preferredNavigationBarTintColor.withSaturationUpdated(to: alpha)
 
         navigationController?.navigationBar.tintColor = tintColor
     }
