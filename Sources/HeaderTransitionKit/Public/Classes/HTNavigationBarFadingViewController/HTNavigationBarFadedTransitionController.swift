@@ -7,6 +7,16 @@
 
 import UIKit
 
+public protocol HTNavigationBarFadedTransitionCoordinator: HTNavigationBarFadedTransitionController {
+
+    func animateTransition(in scrollView: UIScrollView)
+}
+
+public protocol HTNavigationBarFadedTransitionContentProviding: HTNavigationBarFading {
+
+    var coordinator: HTNavigationBarFadedTransitionCoordinator? { get set }
+}
+
 open class HTNavigationBarFadedTransitionController: UIViewController {
 
     // MARK: - Overrides
@@ -41,9 +51,9 @@ open class HTNavigationBarFadedTransitionController: UIViewController {
 
     // MARK: - Initializers
 
-    private(set) var rootViewController: HTNavigationBarFading
+    private(set) var rootViewController: HTNavigationBarFadedTransitionContentProviding
 
-    public init(rootViewController: HTNavigationBarFading) {
+    public init(rootViewController: HTNavigationBarFadedTransitionContentProviding) {
         self.rootViewController = rootViewController
 
         super.init(nibName: nil, bundle: nil)
@@ -83,6 +93,7 @@ private extension HTNavigationBarFadedTransitionController {
         view.addSubview(rootViewController.view)
         addChild(rootViewController)
         rootViewController.didMove(toParent: self)
+        rootViewController.coordinator = self
 
         headerView.layer.zPosition = -1
         headerView.translatesAutoresizingMaskIntoConstraints = false
@@ -117,6 +128,5 @@ private extension HTNavigationBarFadedTransitionController {
             overlayBottomConstraint,
             overlayHeightConstraint
         ])
-        scrollView.delegate = self
     }
 }

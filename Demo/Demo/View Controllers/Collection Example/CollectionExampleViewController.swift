@@ -8,7 +8,7 @@
 import HeaderTransitionKit
 import UIKit
 
-final class CollectionExampleViewController: UIViewController, HTNavigationBarFading {
+final class CollectionExampleViewController: UIViewController, HTNavigationBarFadedTransitionContentProviding {
 
     enum Section {
         case main
@@ -29,6 +29,8 @@ final class CollectionExampleViewController: UIViewController, HTNavigationBarFa
     }
 
     // MARK: - Members
+
+    weak var coordinator: HTNavigationBarFadedTransitionCoordinator?
 
     var collectionView: UICollectionView!
     var dataSource: UICollectionViewDiffableDataSource<Section, Int>!
@@ -77,4 +79,13 @@ final class CollectionExampleViewController: UIViewController, HTNavigationBarFa
     }
 }
 
-extension CollectionExampleViewController: UICollectionViewDelegate {}
+extension CollectionExampleViewController: UICollectionViewDelegate {
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("Selected item at indexPath: \(indexPath)")
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        coordinator?.animateTransition(in: scrollView)
+    }
+}
