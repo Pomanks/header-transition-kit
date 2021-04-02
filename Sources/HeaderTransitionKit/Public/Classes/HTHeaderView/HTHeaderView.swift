@@ -24,22 +24,23 @@ open class HTHeaderView: UIView {
         return view
     }()
 
+    /// The `imageView`'s `contentMode` is set to `.scaleAspectFill` for the effect to take place. This cannot be changed.
     public private(set) lazy var imageView: UIImageView = {
         let imageView = UIImageView()
 
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.contentMode = .scaleAspectFill // This is required for the stretchy effect
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
 
         return imageView
     }()
 
     public private(set) lazy var visualEffectView: UIVisualEffectView = {
-        let effect = UIBlurEffect(style: .systemUltraThinMaterial)
+        let effect = UIBlurEffect(style: .systemChromeMaterial)
         let view = UIVisualEffectView(effect: effect)
 
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.alpha = .zero
+//        view.alpha = .zero
 
         return view
     }()
@@ -64,14 +65,6 @@ open class HTHeaderView: UIView {
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    // MARK: - Lifecycle
-
-    //    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-    //        super.traitCollectionDidChange(previousTraitCollection)
-    //
-    //        imageView.image = placeholderImage
-    //    }
 }
 
 // MARK: - Helpers

@@ -70,15 +70,16 @@ extension HTNavigationBarFadedTransitionController: HTNavigationBarFading, HTSta
      This method should be called inside `scrollViewDidScroll(_:)`.
      */
     func scrollViewDidPerformTransition() {
+        let delta: CGFloat = 52
         let currentHeight = headerHeight
-        let threshold = navigationControllerHeight + 52
+        let threshold = navigationControllerHeight
 
         configureNavigationController()
         configureConstraints()
 
         performFirstTransition(after: .twoThirds(of: currentHeight))
         performSecondTransition(after: .oneThird(of: currentHeight))
-        performThirdTransition(after: threshold)
+        performThirdTransition(after: threshold, delta: delta)
     }
 }
 
@@ -212,8 +213,8 @@ private extension HTNavigationBarFadedTransitionController {
 
     // MARK: - Transition (Part 3)
 
-    func performThirdTransition(after threshold: CGFloat) {
-        let alpha: CGFloat = alpha(for: threshold, delta: 52)
+    func performThirdTransition(after threshold: CGFloat, delta: CGFloat) {
+        let alpha: CGFloat = alpha(for: threshold, delta: delta)
 
         updateNavigationItemAlpha(to: alpha)
     }

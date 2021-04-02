@@ -85,7 +85,8 @@ private extension RootViewController {
 
     func makePresentButtonPrimaryAction() -> UIAction? {
         return UIAction(title: "Present VC") { [unowned self] _ in
-            let viewController = CollectionExampleViewController()
+            let rootViewController = CollectionExampleViewController()
+            let viewController = HTNavigationBarFadedTransitionController(rootViewController: rootViewController)
             let navigationController = UINavigationController(rootViewController: viewController)
 
             present(navigationController, animated: true)

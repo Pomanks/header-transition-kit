@@ -17,6 +17,7 @@
 		04C3450C2614BC0C00992780 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C345042614BC0B00992780 /* SceneDelegate.swift */; };
 		04C3450F2614BCA500992780 /* HeaderTransitionKit in Frameworks */ = {isa = PBXBuildFile; productRef = 04C3450E2614BCA500992780 /* HeaderTransitionKit */; };
 		04C345152614D85100992780 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C345142614D85100992780 /* HeaderView.swift */; };
+		04C3451B2617044000992780 /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C3451A2617044000992780 /* OverlayView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 		04C345032614BC0B00992780 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		04C345042614BC0B00992780 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		04C345142614D85100992780 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
+		04C3451A2617044000992780 /* OverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,7 @@
 		04C344F82614BC0B00992780 /* Collection Example */ = {
 			isa = PBXGroup;
 			children = (
+				04C345192617042F00992780 /* Overlay */,
 				04C345132614D84500992780 /* Header */,
 				04C344FA2614BC0B00992780 /* Supplementary Views */,
 				04C344FC2614BC0B00992780 /* CollectionExampleViewController.swift */,
@@ -140,6 +143,14 @@
 				04C345142614D85100992780 /* HeaderView.swift */,
 			);
 			path = Header;
+			sourceTree = "<group>";
+		};
+		04C345192617042F00992780 /* Overlay */ = {
+			isa = PBXGroup;
+			children = (
+				04C3451A2617044000992780 /* OverlayView.swift */,
+			);
+			path = Overlay;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -215,6 +226,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				04C3450B2614BC0B00992780 /* AppDelegate.swift in Sources */,
+				04C3451B2617044000992780 /* OverlayView.swift in Sources */,
 				04C345052614BC0B00992780 /* CollectionExampleViewController+Configuration.swift in Sources */,
 				04C3450C2614BC0C00992780 /* SceneDelegate.swift in Sources */,
 				04C345082614BC0B00992780 /* RootViewController.swift in Sources */,

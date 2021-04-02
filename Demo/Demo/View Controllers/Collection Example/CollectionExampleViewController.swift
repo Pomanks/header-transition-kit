@@ -15,6 +15,9 @@ final class CollectionExampleViewController: UIViewController, HTNavigationBarFa
     }
 
     // MARK: - Overrides
+    
+    
+    
 
     var preferredNavigationBarTintColor: UIColor {
         return .systemOrange
@@ -40,7 +43,7 @@ final class CollectionExampleViewController: UIViewController, HTNavigationBarFa
     }()
 
     private(set) lazy var overlay: HTHeaderViewOverlaying = {
-        let view = HTHeaderViewOverlay()
+        let view = OverlayView()
 
         view.backgroundColor = .clear
 
