@@ -40,7 +40,7 @@ open class HTHeaderView: UIView {
         let view = UIVisualEffectView(effect: effect)
 
         view.translatesAutoresizingMaskIntoConstraints = false
-//        view.alpha = .zero
+        view.alpha = .zero
 
         return view
     }()

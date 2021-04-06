@@ -43,7 +43,6 @@ open class HTNavigationBarFadedTransitionController: UIViewController {
         }
     }
 
-    private(set) var animator: UIViewPropertyAnimator?
     private(set) var headerTopConstraint: NSLayoutConstraint!
     private(set) var overlayBottomConstraint: NSLayoutConstraint!
     private(set) var headerHeightConstraint: NSLayoutConstraint!
@@ -78,6 +77,12 @@ open class HTNavigationBarFadedTransitionController: UIViewController {
         layoutSubviews()
     }
 
+    override open func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        configureNavigationBarAppearance()
+    }
+
     override open func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
@@ -95,17 +100,15 @@ private extension HTNavigationBarFadedTransitionController {
         rootViewController.didMove(toParent: self)
         rootViewController.coordinator = self
 
-        headerView.layer.zPosition = -1
         headerView.translatesAutoresizingMaskIntoConstraints = false
+        headerView.clipsToBounds = true
+        headerView.layer.zPosition = -1
 
         overlay.translatesAutoresizingMaskIntoConstraints = false
+        overlay.clipsToBounds = true
 
         scrollView.addSubview(headerView)
         scrollView.addSubview(overlay)
-
-        animator = UIViewPropertyAnimator()
-        animator?.startAnimation()
-        animator?.pauseAnimation()
 
         // Constants are updated later…
         headerTopConstraint = headerView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor)

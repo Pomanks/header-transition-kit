@@ -13,7 +13,7 @@ extension HTNavigationBarFadedTransitionController: HTNavigationBarFading, HTSta
         rootViewController.preferredNavigationBarTintColor
     }
 
-    open var preferredNavigationBarTitleTextAttributes: [NSAttributedString.Key: Any] {
+    open var preferredNavigationBarTitleTextAttributes: [NSAttributedString.Key: Any]? {
         return rootViewController.preferredNavigationBarTitleTextAttributes
     }
 
@@ -27,6 +27,35 @@ extension HTNavigationBarFadedTransitionController: HTNavigationBarFading, HTSta
 
     open var overlay: HTHeaderViewOverlaying {
         rootViewController.overlay
+    }
+
+    func configureNavigationBarAppearance(with alpha: CGFloat = .zero) {
+        guard let navigationController = navigationController else {
+            return
+        }
+        let navigationBarAppearance = UINavigationBarAppearance()
+        let color: UIColor?
+        var attributes = preferredNavigationBarTitleTextAttributes ?? navigationBarAppearance.titleTextAttributes
+
+        color = attributes[.foregroundColor] as? UIColor
+
+        if -contentOffset.y < navigationControllerHeight {
+            navigationBarAppearance.configureWithDefaultBackground()
+            navigationBarAppearance.shadowColor = nil
+            navigationBarAppearance.shadowImage = nil
+
+            navigationController.navigationBar.tintColor = preferredNavigationBarTintColor
+
+        } else {
+            navigationBarAppearance.configureWithTransparentBackground()
+        }
+        attributes[.foregroundColor] = color?.withAlphaComponent(alpha)
+
+        navigationBarAppearance.titleTextAttributes = attributes
+
+        navigationItem.standardAppearance = navigationBarAppearance
+        navigationItem.compactAppearance = navigationBarAppearance
+        navigationItem.scrollEdgeAppearance = navigationBarAppearance
     }
 
     /**
@@ -46,6 +75,7 @@ extension HTNavigationBarFadedTransitionController: HTNavigationBarFading, HTSta
 
         configureScrollView()
         configureConstraints()
+        configureSubviews()
     }
 
     /**
@@ -70,41 +100,38 @@ extension HTNavigationBarFadedTransitionController: HTNavigationBarFading, HTSta
      This method should be called inside `scrollViewDidScroll(_:)`.
      */
     func scrollViewDidPerformTransition() {
-        let delta: CGFloat = 52
         let currentHeight = headerHeight
-        let threshold = navigationControllerHeight
+        let step1Completion = fractionComplete(after: .twoThirds(of: currentHeight))
+        let step2Completion = fractionComplete(after: .oneThird(of: currentHeight))
+        let finalFraction = fractionComplete(after: navigationControllerHeight, delta: 52)
 
-        configureNavigationController()
         configureConstraints()
 
-        performFirstTransition(after: .twoThirds(of: currentHeight))
-        performSecondTransition(after: .oneThird(of: currentHeight))
-        performThirdTransition(after: threshold, delta: delta)
+        // Step 1
+        headerView.navigationUnderlayGradientView.alpha = 1 - step1Completion
+
+        // Step 2
+        headerView.imageView.alpha = 1 - step2Completion
+        headerView.visualEffectView.alpha = step2Completion
+
+        overlay.alpha = 1 - step2Completion
+
+        updateNavigationBarTintColorAlpha(with: step2Completion)
+
+        // - Step 3
+        if !isPresented {
+            updateStatusBarStyle(for: finalFraction)
+        }
+        configureNavigationBarAppearance(with: finalFraction)
     }
 }
 
-// MARK: - Helpers
+// MARK: - Animations / Transitions
 
 private extension HTNavigationBarFadedTransitionController {
 
-    var headerHeight: CGFloat {
-        return view.bounds.width * headerView.multiplier
-    }
-
-    var contentOffset: CGPoint {
-        return scrollView.contentOffset
-    }
-
-    var adjustedContentOffset: CGPoint {
-        var contentOffset = contentOffset
-
-        contentOffset.y += scrollView.safeAreaInsets.top
-
-        return contentOffset
-    }
-
-    func alpha(for threshold: CGFloat, delta value: CGFloat? = nil) -> CGFloat {
-        let delta = value ?? 26 + navigationControllerHeight // Matches half the Large Title extra space
+    func fractionComplete(after threshold: CGFloat, delta value: CGFloat? = nil) -> CGFloat {
+        let delta = (value ?? 26) + navigationControllerHeight // Matches half the Large Title extra space
         let effectiveNavigationOffsetY = threshold + delta + contentOffset.y // The offset matching our navigation's height
 
         return .fractionComplete(from: effectiveNavigationOffsetY / threshold)
@@ -115,30 +142,6 @@ private extension HTNavigationBarFadedTransitionController {
             return nil
         }
         return size.width * headerView.multiplier
-    }
-
-    func configureNavigationController() {
-        guard let navigationController = navigationController else {
-            return
-        }
-        let navigationBarAppearance = UINavigationBarAppearance()
-
-        if !preferredNavigationBarTitleTextAttributes.isEmpty {
-            navigationBarAppearance.titleTextAttributes = preferredNavigationBarTitleTextAttributes
-        }
-        if -contentOffset.y < navigationControllerHeight {
-            navigationBarAppearance.configureWithDefaultBackground()
-            navigationBarAppearance.shadowColor = nil
-            navigationBarAppearance.shadowImage = nil
-
-            navigationController.navigationBar.tintColor = preferredNavigationBarTintColor
-
-        } else {
-            navigationBarAppearance.configureWithTransparentBackground()
-        }
-        navigationItem.standardAppearance = navigationBarAppearance
-        navigationItem.compactAppearance = navigationBarAppearance
-        navigationItem.scrollEdgeAppearance = navigationBarAppearance
     }
 
     func configureScrollView(for size: CGSize? = nil) {
@@ -172,35 +175,10 @@ private extension HTNavigationBarFadedTransitionController {
         overlayHeightConstraint.constant = overlayConstant + scrollView.safeAreaInsets.top
     }
 
-    // MARK: Transition (Part 1)
+    func configureSubviews() {
+        let alpha: CGFloat = .zero
 
-    func performFirstTransition(after threshold: CGFloat) {
-        headerView.navigationUnderlayGradientView.alpha = 1 - alpha(for: threshold)
-    }
-
-    // MARK: Transition (Part 2)
-
-    func performSecondTransition(after threshold: CGFloat) {
-        let alpha: CGFloat = alpha(for: threshold)
-        let reversedAlpha = 1 - alpha
-
-        headerView.imageView.alpha = reversedAlpha
-        headerView.visualEffectView.alpha = alpha
-
-        overlay.alpha = reversedAlpha
-
-        updateStatusBarStyle(with: alpha)
-        updateNavigationBarTintColorAlpha(with: alpha)
-    }
-
-    func updateStatusBarStyle(with fractionComplete: CGFloat) {
-        guard !isPresented else {
-            return
-        }
-        animator?.addAnimations { [weak self] in
-            self?.barStyle = fractionComplete >= 0.5 ? .default : .black
-        }
-        animator?.fractionComplete = fractionComplete
+        updateStatusBarStyle(for: alpha)
     }
 
     func updateNavigationBarTintColorAlpha(with alpha: CGFloat) {
@@ -211,15 +189,28 @@ private extension HTNavigationBarFadedTransitionController {
         navigationController?.navigationBar.tintColor = tintColor
     }
 
-    // MARK: - Transition (Part 3)
+    func updateStatusBarStyle(for value: CGFloat) {
+        barStyle = value >= 0.5 ? .default : .black
+    }
+}
 
-    func performThirdTransition(after threshold: CGFloat, delta: CGFloat) {
-        let alpha: CGFloat = alpha(for: threshold, delta: delta)
+// MARK: - Helpers
 
-        updateNavigationItemAlpha(to: alpha)
+private extension HTNavigationBarFadedTransitionController {
+
+    var headerHeight: CGFloat {
+        return view.bounds.width * headerView.multiplier
     }
 
-    func updateNavigationItemAlpha(to alpha: CGFloat) {
-        navigationItem.titleView?.alpha = alpha
+    var contentOffset: CGPoint {
+        return scrollView.contentOffset
+    }
+
+    var adjustedContentOffset: CGPoint {
+        var contentOffset = contentOffset
+
+        contentOffset.y += scrollView.safeAreaInsets.top
+
+        return contentOffset
     }
 }

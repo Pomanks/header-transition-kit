@@ -15,16 +15,13 @@ final class CollectionExampleViewController: UIViewController, HTNavigationBarFa
     }
 
     // MARK: - Overrides
-    
-    
-    
 
     var preferredNavigationBarTintColor: UIColor {
         return .systemOrange
     }
 
-    var preferredNavigationBarTitleTextAttributes: [NSAttributedString.Key: Any] {
-        return [:]
+    var preferredNavigationBarTitleTextAttributes: [NSAttributedString.Key: Any]? {
+        return nil
     }
 
     var scrollView: UIScrollView {
