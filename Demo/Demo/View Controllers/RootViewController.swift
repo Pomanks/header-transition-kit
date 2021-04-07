@@ -52,6 +52,7 @@ private extension RootViewController {
     func configureHierarchy() {
         navigationItem.title = "Root"
         navigationItem.largeTitleDisplayMode = .always
+        navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .done)
 
         view.backgroundColor = .systemBackground
 

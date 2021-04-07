@@ -47,6 +47,7 @@ open class HTNavigationBarFadedTransitionController: UIViewController {
     private(set) var overlayBottomConstraint: NSLayoutConstraint!
     private(set) var headerHeightConstraint: NSLayoutConstraint!
     private(set) var overlayHeightConstraint: NSLayoutConstraint!
+    private(set) var preservedNavigationBarTintColor: UIColor?
 
     // MARK: - Initializers
 
@@ -69,6 +70,8 @@ open class HTNavigationBarFadedTransitionController: UIViewController {
         super.viewDidLoad()
 
         configureHierarchy()
+
+        preservedNavigationBarTintColor = navigationController?.navigationBar.tintColor
     }
 
     override open func viewWillLayoutSubviews() {
@@ -87,6 +90,12 @@ open class HTNavigationBarFadedTransitionController: UIViewController {
         super.viewWillTransition(to: size, with: coordinator)
 
         transition(to: size, with: coordinator)
+    }
+
+    override open func willMove(toParent parent: UIViewController?) {
+        super.willMove(toParent: parent)
+
+        navigationController?.navigationBar.tintColor = preservedNavigationBarTintColor
     }
 }
 
