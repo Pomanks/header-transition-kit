@@ -51,7 +51,7 @@ open class HTNavigationBarFadedTransitionController: UIViewController {
 
     // MARK: - Initializers
 
-    private(set) var rootViewController: HTNavigationBarFadedTransitionContentProviding
+    public private(set) var rootViewController: HTNavigationBarFadedTransitionContentProviding
 
     public init(rootViewController: HTNavigationBarFadedTransitionContentProviding) {
         self.rootViewController = rootViewController
