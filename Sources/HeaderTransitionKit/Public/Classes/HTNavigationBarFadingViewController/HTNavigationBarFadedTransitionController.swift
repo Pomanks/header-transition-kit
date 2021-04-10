@@ -131,11 +131,11 @@ private extension HTNavigationBarFadedTransitionController {
             headerTopConstraint,
             headerHeightConstraint,
 
-            headerView.leadingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.leadingAnchor),
-            headerView.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor),
+            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
 
-            overlay.leadingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.leadingAnchor),
-            overlay.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor),
+            overlay.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            overlay.trailingAnchor.constraint(equalTo: view.trailingAnchor),
 
             overlayBottomConstraint,
             overlayHeightConstraint
