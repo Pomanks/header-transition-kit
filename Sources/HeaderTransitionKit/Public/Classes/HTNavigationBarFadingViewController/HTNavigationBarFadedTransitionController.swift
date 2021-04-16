@@ -108,6 +108,7 @@ private extension HTNavigationBarFadedTransitionController {
         addChild(rootViewController)
         rootViewController.didMove(toParent: self)
         rootViewController.coordinator = self
+        rootViewController.view.preservesSuperviewLayoutMargins = true
 
         headerView.translatesAutoresizingMaskIntoConstraints = false
         headerView.clipsToBounds = true

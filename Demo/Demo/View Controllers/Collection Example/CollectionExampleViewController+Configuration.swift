@@ -52,7 +52,7 @@ extension CollectionExampleViewController {
     }
 
     func sectionProvider() -> UICollectionViewCompositionalLayoutSectionProvider {
-        return { _, layoutEnvironment in
+        return { [unowned self] _, layoutEnvironment in
             let itemSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
                 heightDimension: .fractionalHeight(1.0)
@@ -61,7 +61,7 @@ extension CollectionExampleViewController {
 
             item.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 5, bottom: 5, trailing: 5)
 
-            let numberOfItems = self.maximumNumberOfItems(for: layoutEnvironment, matching: 100)
+            let numberOfItems = maximumNumberOfItems(for: layoutEnvironment, matching: 100)
             let ratio = layoutEnvironment.container.effectiveContentSize.width / CGFloat(numberOfItems)
 
             let groupSize = NSCollectionLayoutSize(

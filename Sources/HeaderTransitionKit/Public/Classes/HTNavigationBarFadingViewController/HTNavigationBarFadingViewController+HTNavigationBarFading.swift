@@ -150,6 +150,7 @@ private extension HTNavigationBarFadedTransitionController {
         let contentOffset = CGPoint(x: .zero, y: -height)
 
         scrollView.contentInset.top = topInset
+        scrollView.preservesSuperviewLayoutMargins = true
         scrollView.verticalScrollIndicatorInsets.top = topInset
         scrollView.setContentOffset(contentOffset, animated: true)
     }
