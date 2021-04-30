@@ -43,6 +43,14 @@ open class HTHeaderViewOverlay: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - Lifecycle
+
+    open func setColors(to colors: [UIColor]) {
+        overrideUserInterfaceStyle = traitCollection.userInterfaceStyle
+
+        maskGradientView.configure(with: colors)
+    }
+
     open func configureHierarchy() {
         insetsLayoutMarginsFromSafeArea = false
         overrideUserInterfaceStyle = preferredUserInterfaceStyle

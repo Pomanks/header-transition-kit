@@ -45,6 +45,10 @@ open class HTGradientView: UIView {
         ]
         configureGradient(with: colors, locations: nil)
     }
+
+    func configure(with colors: [UIColor], locations: [NSNumber]? = nil) {
+        configureGradient(with: colors, locations: locations)
+    }
 }
 
 // MARK: - Helpers
