@@ -73,6 +73,10 @@ extension CollectionExampleViewController {
 
             section.decorationItems = [.background(elementKind: SectionBackgroundDecorationView.elementKind)]
 
+            print(layoutEnvironment.container.contentSize.width)
+            print(layoutEnvironment.container.effectiveContentSize.width)
+//            section.contentInsets
+
             return section
         }
     }

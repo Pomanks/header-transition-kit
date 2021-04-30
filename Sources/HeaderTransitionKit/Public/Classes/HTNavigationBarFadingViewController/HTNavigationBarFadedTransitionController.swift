@@ -104,11 +104,16 @@ open class HTNavigationBarFadedTransitionController: UIViewController {
 private extension HTNavigationBarFadedTransitionController {
 
     func configureHierarchy() {
-        view.addSubview(rootViewController.view)
+        view.preservesSuperviewLayoutMargins = true
+
         addChild(rootViewController)
+        view.addSubview(rootViewController.view)
+
+        rootViewController.view.preservesSuperviewLayoutMargins = true
+        rootViewController.view.frame = view.bounds
+        rootViewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         rootViewController.didMove(toParent: self)
         rootViewController.coordinator = self
-        rootViewController.view.preservesSuperviewLayoutMargins = true
 
         headerView.translatesAutoresizingMaskIntoConstraints = false
         headerView.clipsToBounds = true

@@ -67,6 +67,7 @@ final class CollectionExampleViewController: UIViewController, HTNavigationBarFa
     }
 
     func configureHierarchy() {
+        print(view.bounds)
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: makeCompositionalLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.backgroundColor = .systemBackground
