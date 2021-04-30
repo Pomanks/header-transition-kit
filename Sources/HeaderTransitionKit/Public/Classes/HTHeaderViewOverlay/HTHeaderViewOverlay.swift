@@ -45,9 +45,12 @@ open class HTHeaderViewOverlay: UIView {
 
     // MARK: - Lifecycle
 
-    open func setColors(to colors: [UIColor]) {
-        overrideUserInterfaceStyle = traitCollection.userInterfaceStyle
+    open func setColors(to colors: [UIColor],
+                        updatingUserInterfaceStyleTo newUserInterfaceStyle: UIUserInterfaceStyle? = nil) {
 
+        if let newUserInterfaceStyle = newUserInterfaceStyle {
+            overrideUserInterfaceStyle = newUserInterfaceStyle
+        }
         maskGradientView.configure(with: colors)
     }
 
